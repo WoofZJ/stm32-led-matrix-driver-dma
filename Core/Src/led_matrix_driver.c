@@ -92,8 +92,10 @@ void draw_pixel_888(int x, int y, uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void draw_pixel(int x, int y, uint16_t rgb) {
-  transform(&x, &y);
-  m_colors[x][y][cur] = rgb;
+  if (x >= 0 && x < 64 && y >= 0 && y < 64) {
+    transform(&x, &y);
+    m_colors[x][y][cur] = rgb;
+  }
 }
 
 void update_pixel(int x, int y) {
@@ -194,25 +196,24 @@ void draw_fill_rect(int x, int y, int w, int h, uint16_t border_rgb, uint16_t fi
 }
 
 int draw_char(wchar_t wch, int x, int y, uint16_t rgb) {
-  // TODO!
-  return 0;
-  // int id = 0;
-  // while (font[id].codepoint != wch && id < FONT_LEN) {
-  //   ++id;
-  // }
-  // if (id >= FONT_LEN) {
-  //   return 0;
-  // }
-  // uint64_t d = font[id].data;
-  // for (int j = y; j < y+8; ++j) {
-  //   for (int i = x; i < font[id].w+x; ++i) {
-  //     if (d & 0x1) {
-  //       draw_pixel(i, j, rgb);
-  //     }
-  //     d >>= 1;
-  //   }
-  // }
-  // return font[id].w;
+  int id = 0;
+  while (fonts[id].codepoint != wch && id < chr_num) {
+    ++id;
+  }
+  if (id >= chr_num) {
+    return 0;
+  }
+  uint64_t d = fonts[id].data;
+  int w = fonts[id].wh>>4;
+  for (int j = y; j < y+8; ++j) {
+    for (int i = x; i < w+x; ++i) {
+      if (d & 0x1) {
+        draw_pixel(i, j, rgb);
+      }
+      d >>= 1;
+    }
+  }
+  return w;
 }
 
 int draw_text(wchar_t *wstr, int x, int y, uint16_t rgb) {

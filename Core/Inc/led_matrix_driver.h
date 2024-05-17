@@ -4,6 +4,14 @@
 #include <stdint.h>
 #include "dma.h"
 
+typedef struct Font {
+  uint32_t codepoint;
+  uint64_t data;
+  uint8_t wh;
+} Font;
+extern const int chr_num;
+extern const Font fonts[];
+
 uint16_t to_rgb565(uint8_t r, uint8_t g, uint8_t b);
 void init_driver(uint8_t rotate_x, uint8_t rotate_y, DMA_HandleTypeDef* hdma);
 void draw_pixel_888(int x, int y, uint8_t r, uint8_t g, uint8_t b);
